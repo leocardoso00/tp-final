@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="orderTable.js"></script>
+    <title>Gerenciador de Campeonato</title>
+    <style type="text/css">
+      .sortorder:after {
+        content: '\25b2';
+      }
+      .sortorder.reverse:after {
+        content: '\25bc';
+      }
+    </style>
+    
+    
+  </head>
+  <body ng-app="orderBy">   
+      
+   <div class="modal fade" id="modalAddCamp" role="dialog">
+    <div class="modal-dialog">
+    
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Adicionar Campeonato</h4>
+        </div>
+        <div class="modal-body">
+            Nome:<br>
+            <input id="add-nomeC" type="text"><br>
+        </div>
+        <div class="modal-footer">
+          <button id="add-camp" type="button" class="btn btn-default" data-dismiss="modal">Salvar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+        
+    </div>
+   </div>
+      
+   <div class="modal fade" id="modalAddTime" role="dialog">
+    <div class="modal-dialog">
+    
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Adicionar Time</h4>
+        </div>
+        <div class="modal-body" ng-controller="controllerOptionT">
+            Nome:<br>
+            <input id="add-nomeT" type="text"><br>
+            Técnico:<br>
+            <input id="add-tecnico" type="text"><br>
+            Localização:<br>
+            <input id="add-local" type="text"><br>
+            Campeonato:<br>
+            <select id="add-campeonatoT">
+                <option ng-repeat="cont in conts" value="{{cont.nome}}">{{cont.nome}}</option>
+            </select>
+        </div>
+        <div class="modal-footer">
+          <button id="add-time" type="button" class="btn btn-default" data-dismiss="modal">Salvar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+        
+    </div>
+   </div>
+      
+   <div class="modal fade" id="modalAddJogador" role="dialog">
+    <div class="modal-dialog">
+    
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Adicionar Jogador</h4>
+        </div>
+        <div class="modal-body" ng-controller="controllerOptionJ">
+            Nome:<br>
+            <input id="add-nomeJ" type="text"><br>
+            Posição:<br>
+            <input id="add-posicao" type="text"><br>
+            Idade:<br>
+            <input id="add-idade" type="text"><br>
+            Nacionalidade:<br>
+            <input id="add-nacio" type="text"><br>
+            Número:<br>
+            <input id="add-numero" type="text"><br>
+            Time:<br>
+            <select id="add-timeJ">
+                <option ng-repeat="cont in conts" value="{{cont.time}}">{{cont.time}}</option>
+            </select>
+        </div>
+        <div class="modal-footer">
+          <button id="add-jogador" type="button" class="btn btn-default" data-dismiss="modal">Salvar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+        
+    </div>
+   </div>
+      
+    <div class="tabelas">  
+    <button class="btn btn-success" type="button" name="button" onClick="listCampeonatos()">Campeonatos</button>
+    <button class="btn btn-success" type="button" name="button" onclick="listTimes()">Times</button>
+    <button class="btn btn-success" type="button" name="button" onclick="listJogadores()">Jogadores</button>
+    <div class="tabela">
+      <div class="headerTabela">
+        <input class="form-control search" ng-model="search" type="text" name="name" value="" placeholder="Buscar...">
+      </div>
+      <div class="contentTabela" ng-controller="controllerTableC">
+          <table class="tableC table table-striped">
+            <tr>
+              <th>
+                <a href="" ng-click="order('nome')">Nome</a>
+                <span class="sortorder" ng-show="predicate === 'nome'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <td>
+                  <button type="button" data-toggle="modal" data-target="#modalAddCamp">+</button>
+              </td>
+            </tr>
+            <tr ng-repeat="cont in conts | orderBy:predicate:reverse | filter: search">
+              <td>{{cont.nome}}</td>
+              <td><button id="rem-camp" value="{{cont.nome}}" type="button">x</button></td>
+            </tr>
+          </table>
+      </div>
+      <div class="contentTabela" ng-controller="controllerTableT">
+          <table class="tableT table table-striped">
+            <tr>
+              <th>
+                <a href="" ng-click="order('time')">Time</a>
+                <span class="sortorder" ng-show="predicate === 'time'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('tecnico')">Técnico</a>
+                <span class="sortorder" ng-show="predicate === 'tecnico'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('localizacao')">Localização</a>
+                <span class="sortorder" ng-show="predicate === 'localizacao'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <td>
+                  <button type="button" data-toggle="modal" data-target="#modalAddTime">+</button>
+              </td>
+            </tr>
+            <tr ng-repeat="cont in conts | orderBy:predicate:reverse | filter: search">
+              <td>{{cont.time}}</td>
+              <td>{{cont.tecnico}}</td>
+              <td>{{cont.localizacao}}</td>
+              <td><button id="rem-time" value="{{cont.time}}" type="button">x</button></td>
+            </tr>
+          </table>
+      </div>
+      <div class="contentTabela" ng-controller="controllerTableJ">
+          <table class="tableJ table table-striped">
+            <tr>
+              <th>
+                <a href="" ng-click="order('nome')">Nome</a>
+                <span class="sortorder" ng-show="predicate === 'nome'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('posicao')">Posição</a>
+                <span class="sortorder" ng-show="predicate === 'posicao'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('idade')">Idade</a>
+                <span class="sortorder" ng-show="predicate === 'idade'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('nacionalidade')">Nacionalidade</a>
+                <span class="sortorder" ng-show="predicate === 'nacionalidade'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('numero')">Número</a>
+                <span class="sortorder" ng-show="predicate === 'numero'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <th>
+                <a href="" ng-click="order('time')">Time</a>
+                <span class="sortorder" ng-show="predicate === 'time'" ng-class="{reverse:reverse}"></span>
+              </th>
+              <td>
+                  <button type="button" data-toggle="modal" data-target="#modalAddJogador">+</button>
+              </td>
+            </tr>
+            <tr ng-repeat="cont in conts | orderBy:predicate:reverse | filter: search">
+              <td>{{cont.nome}}</td>
+              <td>{{cont.posicao}}</td>
+              <td>{{cont.idade}}</td>
+              <td>{{cont.nacionalidade}}</td>
+              <td>{{cont.numero}}</td>
+              <td>{{cont.time}}</td>
+              <td><button id="rem-jogador" value="{{cont.nome}}" type="button">x</button></td>
+            </tr>
+          </table>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>
